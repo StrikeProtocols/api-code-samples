@@ -9,7 +9,7 @@ def compute_settlement_flow_hash(
 
     content_strings = []
 
-    inflows.sort(key=lambda x: x['counterpartyCustodianIdentifier'])
+    inflows.sort(key=lambda x: (x['counterpartyCustodianIdentifier'], x['strikeSymbol']))
     for inflow in inflows:
         content_strings.append("|".join([
             inflow['counterpartyCustodianIdentifier'],
@@ -18,7 +18,7 @@ def compute_settlement_flow_hash(
             str(Decimal(inflow['amount']).quantize(quanta))
         ]))
 
-    outflows.sort(key=lambda x: x['counterpartyCustodianIdentifier'])
+    outflows.sort(key=lambda x: (x['counterpartyCustodianIdentifier'], x['strikeSymbol']))
     for outflow in outflows:
         content_strings.append("|".join([
             account_identifier,
@@ -40,6 +40,7 @@ content, settlement_flow_hash = compute_settlement_flow_hash(
     settlement_plan_identifier="sp-1",
     account_identifier="id-1",
     inflows=[
+        {'counterpartyCustodianIdentifier': 'id-3', 'strikeSymbol': 'XBT', 'amount': '1'},
         {'counterpartyCustodianIdentifier': 'id-3', 'strikeSymbol': 'USD', 'amount': '1000'},
         {'counterpartyCustodianIdentifier': 'id-2', 'strikeSymbol': 'USD', 'amount': '500'}],
     outflows=[
@@ -48,6 +49,6 @@ content, settlement_flow_hash = compute_settlement_flow_hash(
 
 
 assert content == \
-    "id-2|id-1|USD|500.000000000000000000|id-3|id-1|USD|1000.000000000000000000|id-1|id-2|XET|1.500000000000000000|id-1|id-3|XET|3.000000000000000000|sp-1"
+    "id-2|id-1|USD|500.000000000000000000|id-3|id-1|USD|1000.000000000000000000|id-3|id-1|XBT|1.000000000000000000|id-1|id-2|XET|1.500000000000000000|id-1|id-3|XET|3.000000000000000000|sp-1"
 assert settlement_flow_hash == \
-    "89a0a34375dd34fdfb123d1a851e1324c49494131c02b04e51d194d38f30a39b"
+    "b64c129e8d94b746a54f5ab2dfc27090513db8f7647e13ab60844f2ae459af42"
