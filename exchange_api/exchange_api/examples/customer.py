@@ -14,7 +14,7 @@ def create_and_onboard_customer(client: Client, name: str, custodian_id: str):
         custodian_id,
         customer['FIXAccountIdentifier'],
     )
-    client.sandbox_accept_customer_onboarding_request(customer['identifier'])
+    client.sandbox_activate_customer_onboarding_request(customer['identifier'])
     return customer
 
 
