@@ -11,4 +11,4 @@ test: setup
 
 setup:
 	test -d venv || python3 -m venv venv
-	. ./venv/bin/activate && pip install -r requirements.txt
+	. ./venv/bin/activate && pip3 install -r requirements.txt
