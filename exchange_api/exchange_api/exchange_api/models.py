@@ -73,7 +73,7 @@ class InternationalTransferMethodDetails:
         }
 
 
-class BankTransferDetails:
+class WireTransferTargetInfo:
     def __init__(
             self,
             bank_account_name: str,
@@ -82,6 +82,7 @@ class BankTransferDetails:
             bank_account_type: Optional[BankAccountType] = None,
             routing_number: Optional[str] = None,
             international_details: Optional[InternationalTransferMethodDetails] = None,
+            wire_reference: Optional[str] = None
     ):
         self.bank_name = bank_name
         self.bank_account_name = bank_account_name
@@ -89,6 +90,7 @@ class BankTransferDetails:
         self.bank_account_number = bank_account_number
         self.routing_number = routing_number
         self.international_details = international_details
+        self.wire_reference = wire_reference
 
     def to_json(self):
         return {
@@ -98,4 +100,5 @@ class BankTransferDetails:
             'bankAccountNumber': self.bank_account_number,
             'routingNumber': self.routing_number,
             'internationalDetails': self.international_details.to_json() if self.international_details else None,
+            'wireReference': self.wire_reference
         }

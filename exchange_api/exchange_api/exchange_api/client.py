@@ -13,7 +13,7 @@ from ecdsa import SigningKey, util as ecdsa_util
 import pytz
 import requests
 
-from .models import WithdrawalDestinationType, BankTransferDetails, TransferStatus
+from .models import WithdrawalDestinationType, WireTransferTargetInfo, TransferStatus
 
 
 class UnexpectedStatusCode(Exception):
@@ -712,7 +712,7 @@ class Client:
             withdrawal_destination_name: str,
             withdrawal_destination_type: WithdrawalDestinationType,
             symbol: Optional[str] = None,  # must be specified for crypto
-            bank_transfer_details: Optional[BankTransferDetails] = None,  # must be specified for FIAT
+            wire_transfer_target_info: Optional[WireTransferTargetInfo] = None,  # must be specified for FIAT
             wallet_address: Optional[str] = None,
             destination_tag: Optional[str] = None,
             **kwargs
@@ -721,12 +721,13 @@ class Client:
             "custodian",
             "Bank Destination Label",
             WithdrawalDestinationType.USBank,
-            bank_transfer_details=BankTransferDetails(
+            wire_transfer_target_info=WireTransferTargetInfo(
                 "Account Name",
                 "40100410014", # account number
                 "Bank Name",
                 BankAccountType.checking,
-                "200200211" # routing number
+                "200200211", # routing number
+                "wire-reference"
             )
         )
 
@@ -742,7 +743,7 @@ class Client:
             'name': withdrawal_destination_name,
             'destinationType': withdrawal_destination_type.name,
             'symbol': symbol,
-            'bankTransferDetails': bank_transfer_details.to_json() if bank_transfer_details else None,
+            'wireTransferTargetInfo': wire_transfer_target_info.to_json() if wire_transfer_target_info else None,
             'walletAddress': wallet_address,
             'destinationTag': destination_tag,
         }, **kwargs)
@@ -754,6 +755,7 @@ class Client:
             amount: str,
             symbol: str,
             venue_withdrawal_identifier: Optional[str] = None,
+            wire_reference: Optional[str] = None,
             **kwargs
     ):
         """ Usage: client.request_custodian_withdrawal(
@@ -761,7 +763,8 @@ class Client:
             "2829fa04-d8dd-4c36-8bd2-80585e215623",
             "123.45",
             "USD",
-            "my-withdrawal-identifier" # optional
+            "my-withdrawal-identifier", # optional
+            "wire-reference"            # optional
         )
         """
         return self.post(f'custodians/{custodian_id}/withdrawals', data={
@@ -769,6 +772,7 @@ class Client:
             'amount': amount,
             'symbol': symbol,
             'destinationIdentifier': destination_identifier,
+            'wireReference': wire_reference
         }, **kwargs)
 
     def list_custodian_withdrawals(
